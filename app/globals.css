@@ -1,26 +1,133 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+:root,
+html.dark {
+  --background: #09090b;
+  --rail: #111113;
+  --card: #111113;
+  --card-hover: #18181b;
+  --hairline: #27272a;
+  --foreground: #fafafa;
+  --muted: #a1a1aa;
+  --accent: #d4a574;
+  --vanta-net: #d4a574;
+  --vanta-layer-opacity: 0.42;
+  --vanta-scrim-opacity: 0.84;
+  color-scheme: dark;
+}
+
+html.light {
+  --background: #f6f4ef;
+  --rail: #e3e1dc;
+  --card: #e8e6e1;
+  --card-hover: #dedcd6;
+  --hairline: #ccc9c2;
+  --foreground: #18181b;
+  --muted: #52525b;
+  --accent: #b07a45;
+  --vanta-net: #b07a45;
+  --vanta-layer-opacity: 0.78;
+  --vanta-scrim-opacity: 0.52;
+  color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-rail: var(--rail);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-hairline: var(--hairline);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-outfit);
+  --font-display: var(--font-syne);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+html.light .vanta-canvas {
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    background: var(--background);
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  z-index: 100;
+  transform: translateY(-150%);
+  background: var(--rail);
+  color: var(--foreground);
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--hairline);
+}
+
+.skip-link:focus {
+  transform: translateY(1rem);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.section-enter {
+  animation: fade-up 0.55s ease both;
+}
+
+.content-card {
+  background: color-mix(in srgb, var(--card) 40%, transparent);
+}
+
+html.light .content-card {
+  background: var(--card);
+}
+
+html.light .content-card:hover {
+  background: var(--card-hover);
+}
+
+html.dark .content-card:hover {
+  background: color-mix(in srgb, var(--card-hover) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .section-enter {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

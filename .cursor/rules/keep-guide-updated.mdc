@@ -1,0 +1,15 @@
+---
+description: Keep Guide.md in sync whenever source code, content, or setup changes
+alwaysApply: true
+---
+
+# Keep Guide.md updated
+
+After any change to this portfolio (components, `content/site.ts`, `app/`, `lib/`, `public/` assets, scripts, config, or deploy setup), update `Guide.md` in the same turn before finishing.
+
+- Treat `Guide.md` as the human-readable map of the repo, not optional extra docs.
+- Update flowcharts, file tables (editable vs build), run/build/localhost steps, and Vercel steps when those facts change.
+- If a file is added, removed, renamed, or its role changes, reflect that in the file map and architecture summary.
+- If a feature, section, nav item, or content field is added, update the relevant “how it works” and “I want to change X” rows.
+- Do not document `.next/`, `node_modules/`, or other generated output as source.
+- Skip the Guide.md update only when the change is purely generated/cache output with no source or docs impact.
