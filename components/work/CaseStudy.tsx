@@ -23,6 +23,21 @@ export function CaseStudy({ study }: { study: CaseStudyData }) {
           </li>
         ))}
       </ul>
+      {study.demos && study.demos.length > 0 ? (
+        <div className="mt-5 flex flex-wrap gap-2">
+          {study.demos.map((demo) => (
+            <a
+              key={demo.href}
+              href={demo.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center border border-accent px-3 py-1.5 font-display text-sm tracking-wide text-accent transition-colors hover:bg-accent hover:text-background focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            >
+              {demo.label}
+            </a>
+          ))}
+        </div>
+      ) : null}
       <ul className="mt-5 flex flex-wrap gap-2">
         {study.tech.map((tag) => (
           <li

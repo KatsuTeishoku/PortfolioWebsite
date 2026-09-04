@@ -1,0 +1,93 @@
+:root {
+  --ui-bg: #f4f4f6;
+  --ui-bg-subtle: #ececef;
+  --ui-bg-muted: #e2e2e6;
+  --ui-bg-chip: #d8d8de;
+  --ui-bg-status: #e8e8ec;
+  --ui-text: #2a2a30;
+  --ui-text-strong: #141418;
+  --ui-text-muted: #5c5c66;
+  --ui-menu-link: #222228;
+  --ui-border: #c8c8d0;
+  --ui-shadow: rgba(0, 0, 0, 0.08);
+  --ui-field-bg: #ffffff;
+  --ui-field-border: #b8b8c0;
+  --ui-field-hover: #7a7a88;
+  --ui-focus: #b07a45;
+  --ui-focus-ring: rgba(176, 122, 69, 0.28);
+  --ui-btn-bg: #f7f7f8;
+  --ui-btn-text: #222228;
+  --ui-btn-border: #c4c4cc;
+  --ui-enable-off-bg: #dcdce0;
+  --ui-enable-off-text: #555560;
+  --ui-enable-off-border: #b0b0b8;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --ui-bg: #1a1a1e;
+  --ui-bg-subtle: #242428;
+  --ui-bg-muted: #2a2a30;
+  --ui-bg-chip: #323238;
+  --ui-bg-status: #16161a;
+  --ui-text: #d8d8de;
+  --ui-text-strong: #f0f0f4;
+  --ui-text-muted: #a0a0aa;
+  --ui-menu-link: #f0f0f4;
+  --ui-border: #3e3e46;
+  --ui-shadow: rgba(0, 0, 0, 0.35);
+  --ui-field-bg: #1e1e24;
+  --ui-field-border: #4a4a54;
+  --ui-field-hover: #8a8a96;
+  --ui-focus: #d4a574;
+  --ui-focus-ring: rgba(212, 165, 116, 0.28);
+  --ui-btn-bg: #2c2c32;
+  --ui-btn-text: #f0f0f4;
+  --ui-btn-border: #4a4a54;
+  --ui-enable-off-bg: #3a3a42;
+  --ui-enable-off-text: #b8b8c0;
+  --ui-enable-off-border: #55555e;
+  color-scheme: dark;
+}
+
+.theme_toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg-subtle);
+  color: var(--ui-text-strong);
+  cursor: pointer;
+}
+
+.theme_toggle:hover {
+  border-color: var(--ui-focus);
+  color: var(--ui-focus);
+}
+
+.theme_toggle:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+
+.theme_icon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme_icon_sun {
+  display: block;
+}
+
+:root:not([data-theme="dark"]) .theme_icon_moon {
+  display: block;
+}
+
+.labsoft_nav_current {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

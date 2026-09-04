@@ -76,7 +76,7 @@ export function NavLinks({
                         ? "border-l-2 border-accent pl-4 text-foreground"
                         : "border-l-2 border-transparent pl-4 text-muted hover:text-foreground"
                     }`
-                  : `relative block py-2 pl-4 font-display text-[calc(0.875rem+12pt)] leading-snug tracking-wide transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
+                  : `flex w-full items-center gap-2 px-4 py-2 text-left font-display text-[calc(0.875rem+12pt)] leading-snug tracking-wide transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
                       isActive
                         ? "font-semibold text-foreground"
                         : "font-normal text-muted hover:text-foreground"
@@ -86,7 +86,7 @@ export function NavLinks({
               {!isOverlay ? (
                 <span
                   aria-hidden
-                  className={`absolute top-1/2 left-0 h-6 w-0.5 -translate-y-1/2 rounded-full transition-all duration-200 ${
+                  className={`h-6 w-0.5 shrink-0 rounded-full transition-all duration-200 ${
                     isActive ? "bg-accent" : "bg-transparent"
                   }`}
                 />

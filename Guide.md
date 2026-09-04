@@ -179,11 +179,12 @@ flowchart LR
 | `components/SiteChrome.tsx` | Shell: sidebar + mobile nav + main offset | Overall layout |
 | `components/Sidebar.tsx` | Desktop left rail (photo, nav, email, last updated) | Desktop chrome |
 | `components/MobileNav.tsx` | Top bar + overlay menu | Mobile chrome |
-| `components/NavLinks.tsx` | Wordmark + section links | Nav look/behavior |
+| `components/NavLinks.tsx` | Wordmark + section links; desktop rail links are left-aligned with equal horizontal padding | Nav look/behavior |
 | `components/ThemeToggle.tsx` | Sun/moon button | Theme UI |
 | `components/ProfilePhoto.tsx` | Next.js `<Image>` sizes/crop | Portrait crop (`object-[center_18%]`) |
 | `components/sections/SectionHeader.tsx` | Shared section title; `id` is the scroll target (`work`, `about`) | Section headings |
-| `components/sections/HomeSection.tsx` | Hero (vertically centered) | Hero layout |
+| `components/sections/NumberedLines.tsx` | Shared 01/02/03-style numbered line layout | Hero + positioning lines |
+| `components/sections/HomeSection.tsx` | Hero (vertically centered); lines 01–03 + 04–06 | Hero layout |
 | `components/sections/WorkSection.tsx` | Work section: Projects, then Work Experience | Work layout |
 | `components/sections/AboutSection.tsx` | Photo, name, title, bio, education, scholarships, skills, contact | About layout |
 | `components/work/CaseStudy.tsx` | One project card + Details disclosure | Project card UI |
@@ -195,6 +196,12 @@ flowchart LR
 | `lib/useActiveSection.ts` | Scroll spy + click lock (`navigateTo`) | Active nav highlighting |
 | `types/vanta.d.ts` | TypeScript types for `vanta/dist/vanta.net.min` | Vanta import typing |
 | `public/jhaycee-acain.png` | 4K graduation portrait (URL `/jhaycee-acain.png`) | Replace photo; keep the same filename **or** update `site.portrait.src` |
+| `public/demo/` | Live LABSoft demo pages (copy from `Demo/` after edits) | Served at `/demo/...` |
+| `public/demo/ui-theme.css` / `ui-theme.js` | Shared light/dark tokens + sun/moon toggle | Demo theme look and sync |
+| `public/demo/labsoft-demo-bus.js` | Shared FG state (`LABSOFT_DEMO_FG_STATE` + BroadcastChannel) | FG ↔ scope linking |
+| `public/demo/labsoft-demo-preview.js` | Emits ADCS packets into Oscilloscope.js at the capture period (`N / Fs`); stopped FG channels output 0 V | Scope traces in the demo |
+| `public/demo/Oscilloscope.html` (+ `.css` / `.js`) | Oscilloscope frontend demo | Scope UI |
+| `public/demo/Function Generator.html` (+ `.css` / `FunctionGenerator.js`) | Two-channel FG demo: stacked Ch1/Ch2 previews, then channel controls | FG UI |
 | `public/projects/` | Placeholder folder (only `.gitkeep`) | Future project screenshots |
 | `package.json` | Scripts and dependencies | Adding packages |
 | `next.config.ts` | Next.js config (currently empty) | Images, redirects, etc. |
@@ -238,7 +245,7 @@ If you “broke” the site after a bad cache: stop the server, delete `.next`, 
 | --- | --- |
 | `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg` | Leftover create-next-app assets. Not imported. |
 | `Acain_CV.pdf` (repo root) | **Not in `public/`**, not linked. Visitors cannot download it. |
-| `Grad Pic - Updated Background_1.jpg` / `Grad Pic - Updated Background_1_4k pix.png` (repo root) | Source photos. The live image is `public/jhaycee-acain.png` (4K). |
+| `Demo/` (repo root) | Working copy of LABSoft HTML/CSS/JS. The live site serves `public/demo/`. |
 
 ---
 
@@ -274,7 +281,7 @@ Single source of truth:
 - `site` — name, title, email, lastUpdated, location, portrait path.
 - `home`, `caseStudies`, `experience`, `about`.
 
-`CaseStudy` type: `id`, `title`, `summary`, `roles` (`title` + `dates` per line), `bullets`, `tech`, optional `recognition`. Lab in a Box uses two role lines (thesis and advising).
+`CaseStudy` type: `id`, `title`, `summary`, `roles` (`title` + `dates` per line), optional `demos` (`label` + `href`), `bullets`, `tech`, optional `recognition`. Lab in a Box uses two role lines (thesis and advising) and links to `/demo/Oscilloscope.html` and `/demo/Function Generator.html`.
 
 ### Client chrome (`SiteChrome` and children)
 
@@ -288,7 +295,21 @@ Three variants: `rail` (112px circle, priority), `header` (36px circle, priority
 
 ### Work UI
 
-Work and About share `SectionHeader` (index, title, short intro) and `SubsectionHeading`. The `work` and `about` ids live on those headers so nav clicks pin **Work** / **About Me** to the top of the main column. Work lists **Projects** then a timeline of **Work Experience**. About leads with photo + bio, then education, a two-column scholarships/skills block, and a contact strip. `CaseStudy` shows summary, then role and dates on one row (stacked on small screens). Extra bullets live in `DetailsDisclosure` (300ms height-and-fade). `ExperienceList` is a left-rail timeline with accent dots.
+Work and About share `SectionHeader` (index, title, short intro) and `SubsectionHeading`. The `work` and `about` ids live on those headers so nav clicks pin **Work** / **About Me** to the top of the main column. Work lists **Projects** then a timeline of **Work Experience**. About leads with photo + bio, then education, a two-column scholarships/skills block, and a contact strip. `CaseStudy` shows summary, then role and dates on one row (stacked on small screens). Optional `demos` render as accent outline buttons (Lab in a Box: Oscilloscope Demo, Function Generator Demo) that open `/demo/` HTML pages in a new tab. Extra bullets live in `DetailsDisclosure` (300ms height-and-fade). `ExperienceList` is a left-rail timeline with accent dots.
+
+LABSoft demos are static files in `public/demo/` (keep in sync with the repo-root `Demo/` folder). Next.js serves them at `/demo/Oscilloscope.html` and `/demo/Function Generator.html`. Each demo top bar starts with a **Home** button (`href="/"`) back to the portfolio. Shared `ui-theme.js` / `ui-theme.css` sync light/dark mode and the sun/moon icon across both pages (`localStorage` key `LABSOFT_UI_THEME`, plus `BroadcastChannel`). The Function Generator keeps the three-column layout: stacked Channel 1 / Channel 2 previews on the left, then Channel 1 controls, then Channel 2 controls. Both demo pages fill the browser viewport (`height: 100vh`): the Function Generator uses `--fg-scale: 1.1`, and the Oscilloscope keeps its original control layout while the plot grows to fill leftover height. `labsoft-demo-bus.js` links Function Generator Channel 1 → Oscilloscope Channel 1 and Channel 2 → Channel 2. Each FG channel has Frequency, Period, and Amplitude (peak volts, default 1 V, 0 V to 5 V in 100 mV steps, 0 V offset). The Oscilloscope demo feeds those waves through the same `ingestWebSocketFrame` path as LABSoft. `labsoft-demo-preview.js` emits ADCS packets on a capture-period timer (`N / Fs`, at most 20 Hz), not on every display frame. Stopped Function Generator channels output 0 V; press Run to drive live waveforms. Trigger Mode defaults to Auto. Dragging Trigger Level re-locks the last capture immediately. Vertical Offset redraws the traces as you step or commit the field. The scope redraws WebGL when a new packet, a resize, a zoom animation, or a live trigger-level or offset change happens. Open both pages (same browser, same origin) and press Run on a Function Generator channel to drive waveforms onto the scope. There is no hardware WebSocket or WASM in this preview.
+
+```mermaid
+flowchart LR
+  FG[Function Generator demo]
+  Bus[labsoft-demo-bus.js]
+  Scope[Oscilloscope demo]
+  Theme[ui-theme.js]
+  FG -->|Ch1 / Ch2 state| Bus
+  Bus -->|CH1 / CH2 voltages| Scope
+  Theme -.->|LABSOFT_UI_THEME| FG
+  Theme -.->|LABSOFT_UI_THEME| Scope
+```
 
 ---
 
@@ -493,7 +514,8 @@ Follow the prompts. Git-connected deploys are easier for ongoing updates.
 ### Content and assets
 
 - **CV is not on the site.** `Acain_CV.pdf` sits at the repo root. To make it downloadable, put it in `public/` (e.g. `public/Acain_CV.pdf`) and add a link (`href="/Acain_CV.pdf"`) in About or the sidebar. Files outside `public/` are not served.
-- **`public/projects/` is empty.** Case studies are text-only. Screenshots would go here and need new fields/UI in `CaseStudy`.
+- **LABSoft demos** are served from `public/demo/`. Keep that folder in sync with edits in the root `Demo/` folder. Theme is shared via `LABSOFT_UI_THEME`. Function Generator has two channels with stacked left-column previews and per-channel Amplitude; they drive Oscilloscope CH1/CH2 through `labsoft-demo-bus.js`. Both demo pages fill the browser viewport and have a **Home** link back to `/`. The Oscilloscope software trigger (Auto by default) keeps those traces stable; dragging Trigger Level re-locks the last capture immediately, and Vertical Offset redraws the traces as you adjust it. The preview stream keeps the Oscilloscope display alive at all times; stopped FG channels show 0 V until you press Run.
+- **`public/projects/` is empty.** Case studies are text-only except Lab in a Box demo links. Screenshots would go here and need new fields/UI in `CaseStudy`.
 - **No GitHub, LinkedIn, or other social links** in `content/site.ts`.
 - **Leftover starter SVGs** in `public/` can be deleted once you confirm nothing references them.
 
@@ -535,11 +557,26 @@ Follow the prompts. Git-connected deploys are easier for ongoing updates.
 | Goal | Where |
 | --- | --- |
 | Change name, email, tagline, last-updated date | `content/site.ts` → `site` |
-| Change hero sentences | `content/site.ts` → `home` |
+| Change hero sentences | `content/site.ts` → `home.numbered` |
+| Change hero positioning paragraph | `content/site.ts` → `home.positioning` |
 | Add a project | `content/site.ts` → `caseStudies` |
+| Change Lab in a Box demo links | `content/site.ts` → `caseStudies[0].demos`; HTML/CSS/JS in `public/demo/` |
+| Edit Oscilloscope / Function Generator demos | Edit `Demo/`, then copy into `public/demo/` |
+| Function Generator 1920×1080 scale | `public/demo/Function Generator.css` → `--fg-scale` |
+| Oscilloscope viewport fill | `public/demo/Oscilloscope.css` → `.parent` `100vh` grid; plot is flex `1fr` |
+| Function Generator amplitude | `Demo/Function Generator.html` Amplitude fields (0 V–5 V, 100 mV steps); `FunctionGenerator.js` |
+| Function Generator preview window | `Demo/FunctionGenerator.js` → `PREVIEW_WINDOW_MIN_SEC` (default 35 ms) |
+| Demo light/dark or sun/moon icon | `public/demo/ui-theme.css` and `ui-theme.js` |
+| FG → scope channel linking | `public/demo/labsoft-demo-bus.js` and `labsoft-demo-preview.js` |
+| Oscilloscope software trigger | `public/demo/Oscilloscope.html` Trigger Mode (default Auto); preview packets go through `ingestWebSocketFrame` |
+| Oscilloscope Trigger Level drag | `Demo/Oscilloscope.js` `applyLiveTriggerLevel` re-ingests the last frame while dragging |
+| Oscilloscope Vertical Offset | `Demo/Oscilloscope.js` `applyLiveVerticalOffset` remaps and redraws the last traces immediately |
+| Oscilloscope Stop + 0 s offset | `Demo/Oscilloscope.js` `getDisplayedMarkerFraction` keeps the time-0 marker centered when Horizontal Offset is 0 s |
+| Oscilloscope demo sampling rate | `Demo/Oscilloscope.js` `applyStreamAcquisition` skips `location.reload` in demo preview so offsets persist |
+| Demo Home button | `Demo/Oscilloscope.html` and `Demo/Function Generator.html` first `.menu1` link (`href="/"`); same style as Oscilloscope / Function Generator |
 | Add a job | `content/site.ts` → `experience` |
 | Change bio / education / skills | `content/site.ts` → `about` |
-| Rename a nav tab | `content/site.ts` → `nav` (keep `id` in sync with the section) |
+| Rename a nav tab | `content/site.ts` → `nav` (keep `id` in sync with the section); desktop alignment in `components/NavLinks.tsx` |
 | Replace portrait | `public/jhaycee-acain.png` or `site.portrait` |
 | Colors | `app/globals.css` (`--accent`, `--background`, …) |
 | Tab title | `app/layout.tsx` → `metadata` |
@@ -564,6 +601,8 @@ Portfolio Website/
 ├── lib/                    ← theme, scroll, scroll-spy, cssColorToInt (edit)
 ├── types/vanta.d.ts        ← Vanta TypeScript types
 ├── public/                 ← static files at site root (edit assets)
+│   └── demo/               ← LABSoft Oscilloscope + Function Generator demos
+├── Demo/                   ← working copy of the demos (copy into public/demo/)
 ├── .next/                  ← BUILD OUTPUT (do not edit)
 ├── node_modules/           ← dependencies (do not edit)
 ├── package.json            ← scripts + deps

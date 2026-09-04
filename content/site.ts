@@ -28,12 +28,14 @@ export const home = {
     { n: "03", text: "for digital hardware systems." },
   ],
   positioning:
-    "I work on embedded firmware, hardware interfaces, and real-time visualization for research instruments. I am a Master of Science in Computer Engineering Candidate - Major in Digital Hardware Systems and thesis researcher at the University of San Carlos.",
+    "I work on embedded firmware, hardware interfaces, and real-time visualization for research instruments. I am a Master of Science in Computer Engineering Candidate - Major in Digital Hardware Systems at the University of San Carlos.",
   highlights: [
     "Cum Laude",
-    "DOST-ERDT Scholar",
-    "Lab in a Box",
-    "ADC / oscilloscope research",
+    "University Scholar",
+    "Software Automation Engineer",
+    "Firmware Developer",
+    "3D Modelling/Calibrating/Printing",
+    "PCB Engineer"
   ],
 } as const;
 
@@ -42,11 +44,17 @@ export type CaseStudyRole = {
   dates: string;
 };
 
+export type CaseStudyDemo = {
+  label: string;
+  href: string;
+};
+
 export type CaseStudy = {
   id: string;
   title: string;
   summary: string;
   roles: CaseStudyRole[];
+  demos?: CaseStudyDemo[];
   bullets: string[];
   tech: string[];
   recognition?: string;
@@ -55,17 +63,27 @@ export type CaseStudy = {
 export const caseStudies: CaseStudy[] = [
   {
     id: "lab-in-a-box",
-    title: "Lab in a Box / LABSoft",
+    title: "Lab in A Box (LAB) / LABSoft",
     summary:
       "Portable electronics trainer with high-speed ADC firmware and a browser oscilloscope.",
     roles: [
       {
         title: "Master's Thesis Researcher",
-        dates: "Aug 2024 - present (thesis)",
+        dates: "Aug 2024 - present",
       },
       {
-        title: "Assistant Research Adviser (Lab in A Box (LAB) v3)",
-        dates: "Jan 2025 - Dec 2025 (advising)",
+        title: "Assistant Research Adviser (LAB v3)",
+        dates: "Jan 2025 - Dec 2025",
+      },
+    ],
+    demos: [
+      {
+        label: "Oscilloscope Demo",
+        href: "/demo/Oscilloscope.html",
+      },
+      {
+        label: "Function Generator Demo",
+        href: "/demo/Function%20Generator.html",
       },
     ],
     bullets: [

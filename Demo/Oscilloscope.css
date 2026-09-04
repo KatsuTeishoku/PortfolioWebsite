@@ -1,0 +1,1033 @@
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    background-color: var(--ui-bg);
+    color: var(--ui-text);
+    font-family: 'Roboto', sans-serif;
+}
+
+.parent {
+    display: grid;
+    /* Columns 1-9 = Oscilloscope, fixed at 80% of the width.
+       Columns 10-12 = Channel 1 / Channel 2 / Run+Trigger, sharing the
+       remaining 20% equally and staying responsive.
+       9 x 4fr = 36 and 3 x 3fr = 9  ->  36 / 45 = 80% scope, ~6.67% each. */
+    grid-template-columns:
+        repeat(9, minmax(0, 4fr))
+        repeat(3, minmax(0, 3fr));
+    grid-template-rows: auto auto minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--ui-bg);
+    color: var(--ui-text);
+}
+
+/* Make the channel controls fill (and stay within) their responsive columns. */
+.channel_1_buttons,
+.channel_2_buttons {
+    box-sizing: border-box;
+    padding: 6px;
+    min-width: 0;
+}
+
+.channel_1_buttons select,
+.channel_2_buttons select,
+.channel_1_buttons button,
+.channel_1_buttons .channel_enable_btn,
+.channel_2_buttons button,
+.channel_2_buttons .channel_enable_btn {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin: 2px 0;
+}
+
+/* .parent > * {
+    border: 1px dashed red;
+} */
+
+.menu1 {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    background-color: var(--ui-bg);
+    padding: 8px 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--ui-border);
+}
+
+.menu1 > a {
+    text-decoration: none;
+    color: var(--ui-menu-link);
+    text-align: center;
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 1px 3px;
+}
+
+.menu1 > a:hover {
+    opacity: 0.7;
+}
+
+.menu1 .theme_toggle {
+    margin-left: auto;
+    margin-right: 6px;
+}
+
+.menu2 {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    background-color: var(--ui-bg-muted);
+    padding: 5px 0px;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.menu2 > a {
+    background-color: var(--ui-bg-chip);
+    border-radius: 4px;
+    color: var(--ui-menu-link);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.95em;
+    padding: 6px 12px;
+    margin: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+}
+
+.menu2 > a:hover {
+    background-color: #5a5a5a;
+    color: #fff;
+}
+
+.menu2 > a.active {
+    background-color: #0078d4;
+    color: #fff;
+}
+
+.status_bar {
+    grid-column: span 12 / span 12;
+    grid-row-start: 3;
+    background-color: #00aa00; /* Bright green color matching the image */
+    height: 4px; /* Thin line */
+    padding: 0;
+    margin-top: -10px; /* Overrides the grid gap to pull it directly under menu2 */
+    align-self: start; /* Prevents the bar from stretching to fill the 1fr grid row height */
+    font-size: 0; /* Hides any text inside the div to maintain the thin height */
+    border: none;
+    z-index: 10; /* Ensures it renders visually on top if there's any overlap */
+}
+
+/* .channel_1_text {
+    grid-column-start: 10;
+    grid-row-start: 4;
+}
+
+.channel_2_text {
+    grid-column-start: 11;
+    grid-row-start: 4;
+} */
+
+.channel_1_buttons {
+    grid-column: 10;
+    grid-row: 3;
+    min-height: 0;
+    background-color: var(--ui-bg-subtle);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 4px var(--ui-shadow);
+}
+
+.channel_2_buttons {
+    grid-column: 11;
+    grid-row: 3;
+    min-height: 0;
+    background-color: var(--ui-bg-subtle);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 4px var(--ui-shadow);
+}
+
+.run_buttons {
+    grid-column: 12;
+    grid-row: 3;
+    min-height: 0;
+    background-color: var(--ui-bg-subtle);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 4px var(--ui-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 10px;
+    gap: 8px;
+}
+
+.scope_run_btn {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.scope_run_btn:active {
+    transform: translateY(1px);
+}
+
+.scope_single_btn {
+    background: linear-gradient(180deg, #ffb347 0%, #ff8c1a 100%);
+    color: #fff;
+    border-color: #cc6f00;
+    box-shadow: 0 2px 6px rgba(255, 140, 26, 0.25);
+}
+
+.scope_single_btn:hover {
+    background: linear-gradient(180deg, #ffc266 0%, #ff9b33 100%);
+    color: #fff;
+}
+
+.scope_single_btn.armed {
+    background: linear-gradient(180deg, #ffe08a 0%, #ffb84d 100%);
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 184, 77, 0.45);
+}
+
+.scope_run_btn_run {
+    background: linear-gradient(180deg, #4dabf7 0%, #1c7ed6 100%);
+    color: #fff;
+    border-color: #1864ab;
+    box-shadow: 0 2px 6px rgba(28, 126, 214, 0.3);
+}
+
+.scope_run_btn_run:hover {
+    background: linear-gradient(180deg, #74c0fc 0%, #339af0 100%);
+}
+
+.scope_run_btn_stop {
+    background: linear-gradient(180deg, #34c759 0%, #28a745 100%);
+    color: #fff;
+    border-color: #1e7e34;
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.25);
+}
+
+.scope_run_btn_stop:hover {
+    background: linear-gradient(180deg, #48d96c 0%, #32b956 100%);
+}
+
+.run_buttons select {
+    width: 100%;
+    margin-top: 4px;
+}
+
+/* Acquisition info sits beneath the scope frame (outside .scope_frame) and
+   follows Light/Dark Mode like the rest of the UI chrome. */
+.Oscilloscope_Canvas > .acquisition_info_panel {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 8px 0 2px 0;
+    padding: 8px 12px;
+    background-color: var(--ui-bg-subtle);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    text-align: left;
+    overflow-wrap: anywhere;
+    color: var(--ui-text-muted);
+}
+
+.Horizontal_Offset_text {
+    grid-column: 10;
+    grid-row: 4;
+    text-align: center;
+    font-weight: normal;
+    align-self: end; /* Push text closer to the box below it */
+    font-size: 0.9rem;
+    color: var(--ui-text);
+}
+
+.Trigger_text {
+    grid-column: 11 / 13;
+    grid-row: 4;
+    text-align: center;
+    font-weight: normal;
+    align-self: end; /* Push text closer to the box below it */
+    font-size: 0.9rem;
+    color: var(--ui-text);
+}
+
+.Horizontal_Offset_buttons {
+    grid-column: 10;
+    grid-row: 5;
+    min-height: 0;
+    text-align: center;
+    font-weight: normal;
+    margin: 6px 0 2px 0;
+    font-size: 0.8rem;
+    color: var(--ui-text);
+    background-color: var(--ui-bg-subtle);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+}
+
+.Trigger_Buttons {
+    grid-column: 11 / 13;
+    grid-row: 5;
+    min-height: 0;
+    margin: 6px 0 2px 0;
+    font-size: 0.8rem;
+    color: var(--ui-text);
+    background-color: var(--ui-bg-subtle);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 6px;
+    min-width: 0;
+}
+
+.Trigger_Buttons .trigger_controls_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    min-width: 0;
+}
+
+.Trigger_Buttons .trigger_controls_grid > div {
+    min-width: 0;
+}
+
+.Trigger_Buttons select,
+.Trigger_Buttons .scope_field {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 2px 0;
+}
+
+/* Align and compact the headers (Channel 1, Channel 2, etc.) */
+.channel_1_text, .channel_2_text {
+    text-align: center;
+    font-weight: normal;
+    font-size: 0.9rem;
+    color: var(--ui-text);
+    align-self: end; /* Push text closer to the box below it */
+}
+
+.channel_enable_btn {
+    cursor: pointer;
+}
+
+.channel_enable_btn.active {
+    background-color: #0078d4;
+    color: #fff;
+    border: 1px solid #005a9e;
+}
+
+.channel_enable_btn:not(.active) {
+    background-color: var(--ui-enable-off-bg);
+    color: var(--ui-enable-off-text);
+    border: 1px solid var(--ui-enable-off-border);
+}
+
+.trigger_status {
+    margin-top: 10px;
+    padding: 6px 8px;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--ui-text);
+    background: var(--ui-bg-status);
+    border: 1px solid var(--ui-border);
+    border-radius: 6px;
+    text-align: center;
+}
+
+.trigger_buffer_info {
+    margin-top: 8px;
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.35;
+    color: var(--ui-text-muted);
+    white-space: pre-line;
+}
+
+.scope_field {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px 8px;
+    font-family: monospace;
+    font-size: 0.95em;
+    color: var(--ui-text-strong);
+    background-color: var(--ui-field-bg);
+    border: 2px solid var(--ui-field-border);
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.scope_field:hover {
+    border-color: var(--ui-field-hover);
+}
+
+.scope_field:focus {
+    border-color: var(--ui-focus);
+    box-shadow: 0 0 0 3px var(--ui-focus-ring);
+    caret-color: var(--ui-focus);
+}
+
+.scope_field.invalid {
+    border-color: #e53935;
+    box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2);
+}
+
+/* Native form controls outside the Oscilloscope Display. */
+.channel_1_buttons button:not(.channel_enable_btn),
+.channel_2_buttons button:not(.channel_enable_btn),
+.run_buttons button:not(.scope_run_btn),
+.Horizontal_Offset_buttons button,
+.Trigger_Buttons button,
+.channel_1_buttons select,
+.channel_2_buttons select,
+.run_buttons select,
+.Horizontal_Offset_buttons select,
+.Trigger_Buttons select {
+    color: var(--ui-btn-text);
+    background-color: var(--ui-btn-bg);
+    border: 1px solid var(--ui-btn-border);
+}
+
+.channel_1_buttons p,
+.channel_2_buttons p,
+.run_buttons p,
+.Horizontal_Offset_buttons p,
+.Trigger_Buttons p {
+    color: var(--ui-text);
+}
+
+/* Explicit Dark Mode for the listed UI chrome panels (.scope_frame excluded). */
+:root[data-theme="dark"] .parent {
+    background-color: #1a1a1e;
+    color: #d8d8de;
+}
+
+:root[data-theme="dark"] .menu1 {
+    background-color: #1a1a1e;
+    color: #d8d8de;
+    border-bottom-color: #3e3e46;
+}
+
+:root[data-theme="dark"] .menu1 > a {
+    color: #f0f0f4;
+}
+
+:root[data-theme="dark"] .channel_1_buttons,
+:root[data-theme="dark"] .channel_2_buttons,
+:root[data-theme="dark"] .run_buttons,
+:root[data-theme="dark"] .Horizontal_Offset_buttons,
+:root[data-theme="dark"] .Trigger_Buttons {
+    background-color: #242428;
+    color: #d8d8de;
+    border-color: #3e3e46;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+}
+
+:root[data-theme="dark"] .Horizontal_Offset_text {
+    color: #d8d8de;
+}
+
+:root[data-theme="dark"] .trigger_status,
+:root[data-theme="dark"] #Trigger_Status {
+    background-color: #2e2e34;
+    color: #d8d8de;
+    border-color: #3e3e46;
+}
+
+:root[data-theme="dark"] #Acquisition_Info,
+:root[data-theme="dark"] .Oscilloscope_Canvas > .acquisition_info_panel {
+    background-color: #242428;
+    color: #b0b0b8;
+    border-color: #3e3e46;
+}
+
+:root[data-theme="dark"] .channel_1_buttons p,
+:root[data-theme="dark"] .channel_2_buttons p,
+:root[data-theme="dark"] .run_buttons p,
+:root[data-theme="dark"] .Horizontal_Offset_buttons p,
+:root[data-theme="dark"] .Trigger_Buttons p {
+    color: #d8d8de;
+}
+
+:root[data-theme="dark"] .channel_1_buttons .scope_field,
+:root[data-theme="dark"] .channel_2_buttons .scope_field,
+:root[data-theme="dark"] .run_buttons .scope_field,
+:root[data-theme="dark"] .Horizontal_Offset_buttons .scope_field,
+:root[data-theme="dark"] .Trigger_Buttons .scope_field {
+    color: #f0f0f4;
+    background-color: #1e1e24;
+    border-color: #4a4a54;
+}
+
+:root[data-theme="dark"] .channel_1_buttons button:not(.channel_enable_btn),
+:root[data-theme="dark"] .channel_2_buttons button:not(.channel_enable_btn),
+:root[data-theme="dark"] .run_buttons button:not(.scope_run_btn),
+:root[data-theme="dark"] .Horizontal_Offset_buttons button,
+:root[data-theme="dark"] .Trigger_Buttons button,
+:root[data-theme="dark"] .channel_1_buttons select,
+:root[data-theme="dark"] .channel_2_buttons select,
+:root[data-theme="dark"] .run_buttons select,
+:root[data-theme="dark"] .Horizontal_Offset_buttons select,
+:root[data-theme="dark"] .Trigger_Buttons select {
+    color: #e8e8ee;
+    background-color: #35353c;
+    border-color: #55555e;
+}
+
+:root[data-theme="dark"] .channel_enable_btn:not(.active) {
+    background-color: #3a3a42;
+    color: #9a9aa4;
+    border-color: #55555e;
+}
+
+.Oscilloscope_Canvas {
+    grid-column: 1 / 10;
+    grid-row: 3 / 6;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    --plot-width: 1000px;
+    --plot-height: 100%;
+    /* Narrower y-axis maximizes the signal plot; the freed width flows into the
+       plot's 1fr column automatically. --pad-width reserves room on the right so
+       the last time-division label no longer overlaps the display. */
+    --y-axis-width: 60px;
+    /* Just wide enough to hold the right half of the last x-axis label. */
+    --pad-width: 34px;
+
+    body {
+    background-color: rgb(0.1, 0.1, 0.1);
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    }
+
+    .canvas {
+    width: 100%;
+    height: 70vh;
+    }
+}
+
+.scope_frame {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    box-sizing: border-box;
+    background-color: #000;
+    border: 1px solid #3a3a3a;
+    padding: 6px 6px 8px;
+    width: 100%;
+    min-width: 0;
+    /* Excluded from Light/Dark Mode — always keeps the scope look. */
+    color-scheme: dark;
+}
+
+.scope_frame .scope_header {
+    display: grid;
+    grid-template-columns: var(--y-axis-width) minmax(0, 1fr) var(--pad-width);
+    width: 100%;
+    height: 22px;
+    flex: 0 0 auto;
+    align-items: center;
+}
+
+.scope_frame .scope_pad {
+    display: none;
+}
+
+.scope_frame .scope_panel {
+    display: grid;
+    grid-template-columns: var(--y-axis-width) minmax(0, 1fr) var(--pad-width);
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    min-width: 0;
+}
+
+.scope_frame .y_axis {
+    width: var(--y-axis-width);
+    height: auto;
+    min-height: 0;
+    position: relative;
+    overflow: visible;
+    font-family: monospace;
+    font-size: 12px;
+    background-color: #000;
+}
+
+.scope_frame .y_labels_header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    height: 100%;
+    line-height: 1;
+    padding: 2px 4px;
+    background-color: #000;
+}
+
+.scope_frame .y_labels_header > span {
+    display: block;
+}
+
+.scope_frame .y_labels_header > span:first-child {
+    text-align: center;
+}
+
+.scope_frame .y_labels_header > span:last-child {
+    text-align: center;
+}
+
+.scope_frame .y_labels_rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 6px;
+    height: 100%;
+}
+
+.scope_frame .y_labels_col {
+    position: relative;
+    height: 100%;
+}
+
+.scope_frame .y_labels_col > div {
+    width: 100%;
+    text-align: center;
+}
+
+.scope_frame .y_labels_ch1 {
+    color: #ffff00;
+    text-align: center;
+}
+
+.scope_frame .y_labels_ch2 {
+    color: #00cec8;
+    text-align: center;
+}
+
+.scope_frame .plot_column {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.scope_frame .plot_pad {
+    display: none;
+}
+
+.scope_frame .plot_area {
+    position: relative;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    background: black;
+    border: 1px solid #3a3a3a;
+    min-width: 0;
+}
+
+.scope_frame .trigger_level_slider {
+    width: 100%;
+    height: 18px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #000;
+    accent-color: #ff9b21;
+}
+
+.scope_frame .trigger_level_slider::-webkit-slider-runnable-track {
+    height: 6px;
+    background: linear-gradient(90deg, #3a3a3a, #ff9b21, #3a3a3a);
+    border-radius: 999px;
+}
+
+.scope_frame .trigger_level_slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: #ffcc7a;
+    border: 2px solid #2b2b2b;
+    /* box-shadow: 0 0 6px rgba(255, 155, 33, 0.7); */
+}
+
+.scope_frame .trigger_level_slider::-moz-range-track {
+    height: 6px;
+    background: linear-gradient(90deg, #3a3a3a, #ff9b21, #3a3a3a);
+    border-radius: 999px;
+}
+
+.scope_frame .trigger_level_slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffcc7a;
+    border: 2px solid #2b2b2b;
+    /* box-shadow: 0 0 6px rgba(255, 155, 33, 0.7); */
+}
+
+.scope_frame .trigger_axis_row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+    color: #f4f4f4;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.scope_frame .trigger_axis_label {
+    color: #ffcc7a;
+}
+
+.scope_frame .trigger_level_value {
+    min-width: 72px;
+    text-align: center;
+    color: #ffcc7a;
+}
+
+.scope_frame .trigger_level_marker.triangle-only.fixed {
+    pointer-events: none;
+    cursor: default;
+    touch-action: auto;
+}
+
+.scope_frame .trigger_level_marker.triangle-only.fixed::before {
+    display: none;
+}
+
+.scope_frame .trigger_level_marker.triangle-only {
+    border-top: none;
+    pointer-events: auto;
+    cursor: ns-resize;
+    touch-action: none;
+    z-index: 5;
+}
+
+.scope_frame .trigger_level_marker.triangle-only::before {
+    left: auto;
+    right: 0;
+    width: 36px;
+    height: 32px;
+    top: -16px;
+}
+
+.scope_frame .trigger_level_marker.triangle-only::after {
+    pointer-events: auto;
+}
+
+.scope_frame .trigger_level_marker.triangle-only.dragging::after {
+    background: #ffcc7a;
+}
+
+.scope_frame .trigger_level_marker {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-top: 2px dashed #ff9b21;
+    z-index: 4;
+    pointer-events: auto;
+    cursor: ns-resize;
+    touch-action: none;
+}
+
+/* Invisible taller hit area so the thin dashed line is easy to grab/drag. */
+.scope_frame .trigger_level_marker::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -9px;
+    height: 18px;
+}
+
+/* Handle (left-pointing triangle) for grab affordance, centered on the line. */
+.scope_frame .trigger_level_marker::after {
+    content: "";
+    position: absolute;
+    right: 4px;
+    top: -1px;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: #ff9b21;
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+    filter: drop-shadow(0 0 3px rgba(255, 155, 33, 0.6));
+}
+
+.scope_frame .trigger_level_marker.dragging {
+    border-top-color: #ffcc7a;
+}
+
+.scope_frame .trigger_level_marker.dragging::after {
+    background: #ffcc7a;
+}
+
+.scope_frame .trigger_position_marker.triangle-only {
+    border-left: none;
+}
+
+.scope_frame .trigger_position_marker.triangle-only::before {
+    top: 0;
+    bottom: auto;
+    height: 24px;
+}
+
+.scope_frame .trigger_position_marker.triangle-only.dragging::after {
+    background: #ffcc7a;
+}
+
+.scope_frame .trigger_position_marker.triangle-only::after {
+    display: none;
+}
+
+/* None mode: draggable top triangle for Horizontal Offset, no dashed vertical line. */
+.scope_frame .trigger_position_marker.offset-handle-only {
+    border-left: none;
+    display: block;
+    pointer-events: auto;
+    cursor: ew-resize;
+    touch-action: none;
+}
+
+.scope_frame .trigger_position_marker.offset-handle-only::before {
+    top: 0;
+    bottom: auto;
+    height: 28px;
+    left: -12px;
+    width: 24px;
+}
+
+.scope_frame .trigger_position_marker.offset-handle-only::after {
+    display: block;
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 4px;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: #ff9b21;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    filter: drop-shadow(0 0 3px rgba(255, 155, 33, 0.6));
+    pointer-events: auto;
+}
+
+.scope_frame .trigger_position_marker.offset-handle-only.dragging::after {
+    background: #ffcc7a;
+}
+
+.scope_frame .trigger_position_marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px dashed #ff9b21;
+    z-index: 3;
+    pointer-events: none;
+    display: none;
+}
+
+.scope_frame .trigger_position_marker.visible {
+    display: block;
+    pointer-events: auto;
+    cursor: ew-resize;
+    touch-action: none;
+}
+
+/* Invisible wider hit area so the thin dashed line is easy to grab/drag. */
+.scope_frame .trigger_position_marker.visible::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -9px;
+    width: 18px;
+}
+
+/* Handle (down-pointing triangle) at the top, centered on the dashed line. */
+.scope_frame .trigger_position_marker.visible::after {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 4px;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: #ff9b21;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    filter: drop-shadow(0 0 3px rgba(255, 155, 33, 0.6));
+}
+
+.scope_frame .trigger_position_marker.dragging {
+    border-left-color: #ffcc7a;
+}
+
+.scope_frame .trigger_position_marker.dragging::after {
+    background: #ffcc7a;
+}
+
+.scope_frame .grid_canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.scope_frame .scope_canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.scope_frame .grid_overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.scope_frame .legend_labels {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: #0f0;
+    font-family: monospace;
+}
+
+.scope_frame .x_labels {
+    position: relative;
+    flex: 0 0 auto;
+    width: 100%;
+    height: 26px;
+    margin-top: 10px;
+    color: #0f0;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: visible;
+    line-height: 1;
+}
+
+.scope_frame .scope_cursor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+}
+
+.scope_frame .scope_cursor.is-active .scope_cursor_line {
+    border-left-color: #ffcc7a;
+}
+
+.scope_frame .scope_cursor_line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px dashed #ff9b21;
+    transform: translateX(-1px);
+    pointer-events: none;
+}
+
+.scope_frame .scope_cursor_readout {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    max-width: min(280px, 90%);
+    padding: 4px 8px;
+    border: 1px solid rgba(255, 155, 33, 0.55);
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.78);
+    color: #e8e8e8;
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.35;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.scope_frame .scope_cursor_readout .scope_cursor_ch1 {
+    color: #ffff00;
+}
+
+.scope_frame .scope_cursor_readout .scope_cursor_ch2 {
+    color: #00cec8;
+}
+
+.scope_frame .scope_cursor_readout .scope_cursor_time {
+    color: #ffcc7a;
+}
+
+.scope_frame .scope_cursor_readout .scope_cursor_sep {
+    color: rgba(232, 232, 232, 0.55);
+}
+
+.scope_frame .plot_area.scope_cursor_active {
+    cursor: crosshair;
+}
+
+@media (max-width: 960px) {
+    html,
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .parent {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+}
+
