@@ -19,7 +19,9 @@ body {
     overflow: hidden;
     background-color: var(--ui-bg);
     color: var(--ui-text);
-    --fg-scale: 1.1;
+    --fg-scale: var(--labsoft-ui-scale, 1.1);
+    --fg-font-scale: 1.2;
+    --fg-wave-scale: 1.45;
 }
 
 .menu1 {
@@ -31,10 +33,10 @@ body {
     background-color: var(--ui-bg);
 }
 
-.menu1 > a {
+.fg_parent .menu1 > a {
     text-decoration: none;
     color: var(--ui-menu-link);
-    font-size: 0.85em;
+    font-size: calc(0.85em * var(--fg-font-scale));
     font-weight: 500;
 }
 
@@ -58,14 +60,14 @@ body {
 
 .fg_title {
     margin: 0;
-    font-size: calc(1.35rem * var(--fg-scale));
+    font-size: calc(1.35rem * var(--fg-scale) * var(--fg-font-scale));
     font-weight: 500;
     color: var(--ui-text-strong);
 }
 
 .fg_demo_note {
     margin: 6px 0 0;
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--fg-scale) * var(--fg-font-scale));
     font-weight: 400;
     color: var(--ui-text-muted);
 }
@@ -81,7 +83,7 @@ body {
 
 .fg_channel_title {
     margin: 0;
-    font-size: calc(1rem * var(--fg-scale));
+    font-size: calc(1rem * var(--fg-scale) * var(--fg-font-scale));
     font-weight: 700;
     flex: 0 0 auto;
 }
@@ -107,12 +109,12 @@ body {
     min-width: 0;
     flex: 0 0 auto;
     padding: calc(8px * var(--fg-scale)) calc(12px * var(--fg-scale));
-    font-size: calc(0.9rem * var(--fg-scale));
+    font-size: calc(0.9rem * var(--fg-scale) * var(--fg-font-scale));
 }
 
 .fg_main {
     display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 14fr) minmax(0, 3fr) minmax(0, 3fr);
     gap: calc(10px * var(--fg-scale));
     padding: calc(10px * var(--fg-scale));
     min-height: 0;
@@ -136,7 +138,7 @@ body {
 
 .fg_section_title {
     margin: 0;
-    font-size: calc(0.95rem * var(--fg-scale));
+    font-size: calc(0.95rem * var(--fg-scale) * var(--fg-font-scale));
     font-weight: 600;
     color: var(--ui-text-strong);
     text-align: center;
@@ -145,7 +147,7 @@ body {
 
 .fg_field_label {
     margin: calc(4px * var(--fg-scale)) 0 calc(2px * var(--fg-scale));
-    font-size: calc(0.85rem * var(--fg-scale));
+    font-size: calc(0.85rem * var(--fg-scale) * var(--fg-font-scale));
     color: var(--ui-text);
     text-align: center;
     flex: 0 0 auto;
@@ -202,7 +204,7 @@ body {
     display: inline-block;
     margin-bottom: calc(10px * var(--fg-scale));
     padding: calc(4px * var(--fg-scale)) calc(10px * var(--fg-scale));
-    font-size: calc(0.85rem * var(--fg-scale));
+    font-size: calc(0.85rem * var(--fg-scale) * var(--fg-font-scale));
     font-weight: 600;
     border-radius: calc(4px * var(--fg-scale));
 }
@@ -221,7 +223,7 @@ body {
 
 .fg_output_label {
     font-family: monospace;
-    font-size: calc(0.9rem * var(--fg-scale));
+    font-size: calc(0.9rem * var(--fg-scale) * var(--fg-font-scale));
 }
 
 .fg_ch1 .fg_output_label {
@@ -242,7 +244,7 @@ body {
 
 .fg_hw_note {
     margin: calc(8px * var(--fg-scale)) 0 0;
-    font-size: calc(0.8rem * var(--fg-scale));
+    font-size: calc(0.8rem * var(--fg-scale) * var(--fg-font-scale));
     line-height: 1.35;
     color: var(--ui-text-muted);
     flex: 0 0 auto;
@@ -258,7 +260,7 @@ body {
     box-sizing: border-box;
     width: 100%;
     padding: calc(6px * var(--fg-scale)) calc(8px * var(--fg-scale));
-    font-size: calc(0.85rem * var(--fg-scale));
+    font-size: calc(0.85rem * var(--fg-scale) * var(--fg-font-scale));
     font-weight: 500;
     text-align: center;
     color: var(--ui-btn-text);
@@ -278,14 +280,29 @@ body {
 
 .fg_wave_symbol {
     display: block;
-    width: calc(44px * var(--fg-scale));
-    height: calc(22px * var(--fg-scale));
-    color: var(--ui-focus);
+    width: calc(44px * var(--fg-scale) * var(--fg-wave-scale));
+    height: calc(22px * var(--fg-scale) * var(--fg-wave-scale));
     flex-shrink: 0;
 }
 
-.fg_wave_btn.selected .fg_wave_symbol {
-    color: var(--ui-text-strong);
+.fg_wave_symbol path {
+    stroke-width: 2.75;
+}
+
+.fg_ch1 .fg_wave_symbol {
+    color: #c9a227;
+}
+
+.fg_ch2 .fg_wave_symbol {
+    color: #00a8a2;
+}
+
+:root[data-theme="dark"] .fg_ch1 .fg_wave_symbol {
+    color: #ffd700;
+}
+
+:root[data-theme="dark"] .fg_ch2 .fg_wave_symbol {
+    color: #00cec8;
 }
 
 .fg_wave_label {
@@ -300,7 +317,7 @@ body {
 
 .fg_ch_panel .scope_field {
     padding: calc(4px * var(--fg-scale)) calc(8px * var(--fg-scale));
-    font-size: calc(0.9rem * var(--fg-scale));
+    font-size: calc(0.9rem * var(--fg-scale) * var(--fg-font-scale));
     border-radius: calc(4px * var(--fg-scale));
     flex: 0 0 auto;
 }
@@ -317,9 +334,9 @@ body {
 }
 
 .fg_status {
-    padding: 8px 16px;
+    padding: calc(8px * var(--fg-scale)) calc(16px * var(--fg-scale));
     font-family: monospace;
-    font-size: 0.75rem;
+    font-size: calc(0.75rem * var(--fg-scale) * var(--fg-font-scale));
     line-height: 1.35;
     color: var(--ui-text-muted);
     background-color: var(--ui-bg-status);
@@ -331,9 +348,9 @@ body {
 .scope_field {
     box-sizing: border-box;
     width: 100%;
-    padding: 5px 8px;
+    padding: calc(5px * var(--fg-scale)) calc(8px * var(--fg-scale));
     font-family: monospace;
-    font-size: 0.95em;
+    font-size: calc(0.95em * var(--fg-scale) * var(--fg-font-scale));
     color: var(--ui-text-strong);
     background-color: var(--ui-field-bg);
     border: 2px solid var(--ui-field-border);
@@ -358,8 +375,8 @@ body {
 }
 
 .scope_run_btn {
-    padding: 10px 14px;
-    font-size: 0.95rem;
+    padding: calc(10px * var(--fg-scale)) calc(14px * var(--fg-scale));
+    font-size: calc(0.95rem * var(--fg-scale) * var(--fg-font-scale));
     font-weight: 600;
     border-radius: 8px;
     border: 1px solid transparent;

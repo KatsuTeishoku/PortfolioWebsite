@@ -11,9 +11,9 @@ export const site = {
   name: "Jhaycee Anthony Acain",
   title:
     "Master of Science in Computer Engineering Candidate - Major in Digital Hardware Systems",
-  email: "jcworkfiles@gmail.com",
-  lastUpdated: "September 3, 2026",
-  location: "Liloan, Cebu, Philippines",
+  email: "jhayceeworkfiles@gmail.com",
+  lastUpdated: "October 6, 2026",
+  location: "Cebu, Philippines",
   institution: "University of San Carlos",
   portrait: {
     src: "/jhaycee-acain.png",
@@ -68,7 +68,7 @@ export const caseStudies: CaseStudy[] = [
       "Portable electronics trainer with high-speed ADC firmware and a browser oscilloscope.",
     roles: [
       {
-        title: "Master's Thesis Researcher",
+        title: "Master of Science Thesis Researcher",
         dates: "Aug 2024 - present",
       },
       {
@@ -112,7 +112,7 @@ export const caseStudies: CaseStudy[] = [
     id: "machine-status-perceptron",
     title: "Machine-status Perceptron",
     summary:
-      "Python perceptron for machine-status decisions, trained on 625 samples.",
+      "Python perceptrons for Emerson DeltaV switchover and performance status, trained on 625 load-index cases.",
     roles: [
       {
         title: "Academic Research Assistant, Emerson Electric Co.",
@@ -120,34 +120,11 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     bullets: [
-      "Built a Python perceptron for thresholded machine-status decisions.",
-      "Trained and evaluated the model on 625 samples.",
+      "Implemented a NumPy perceptron (unit-step, labels 0/1) for two DeltaV checks: redundancy switchover and performance issues.",
+      "Performance training enumerates all 625 combinations of four 1–5 indices (CPU, comms, system, FR memory) and flags an issue when mapped load is under 75%.",
+      "Redundancy uses PAvail, PExist, and RedEnb (40/40/20 weights) over eight binary rows to decide whether switchover is allowed.",
     ],
-    tech: ["Python", "Perceptron ANN"],
-  },
-  {
-    id: "automated-laundry",
-    title: "Automated laundry service",
-    summary:
-      "Weight-based laundry automation with cycle-complete notifications.",
-    roles: [{ title: "Freelance Software Developer", dates: "2022 - present" }],
-    bullets: [
-      "C++ hardware with a Node.js backend, JavaScript frontend, and MySQL.",
-      "Weight-based costing and cycle notifications.",
-    ],
-    tech: ["C++", "Node.js", "JavaScript", "MySQL"],
-  },
-  {
-    id: "water-refilling-pos",
-    title: "Water-refilling POS",
-    summary:
-      "Custom point of sale for sales tracking, inventory, and customer management.",
-    roles: [{ title: "Freelance Software Developer", dates: "2022 - present" }],
-    bullets: [
-      "Point-of-sale system in Java with MongoDB.",
-      "Sales, inventory, and customer management.",
-    ],
-    tech: ["Java", "MongoDB"],
+    tech: ["Python", "NumPy", "Perceptron ANN"],
   },
   {
     id: "invoice-sales-automation",
@@ -166,6 +143,30 @@ export const caseStudies: CaseStudy[] = [
     ],
     tech: ["RegEx", "Automation"],
   },
+  {
+    id: "automated-laundry",
+    title: "Automated laundry service",
+    summary:
+      "Weight-based laundry automation with cycle-complete notifications.",
+    roles: [{ title: "Freelance Software Developer", dates: "2022" }],
+    bullets: [
+      "C++ hardware with a Node.js backend, JavaScript frontend, and MySQL.",
+      "Weight-based costing and cycle notifications.",
+    ],
+    tech: ["C++", "Node.js", "JavaScript", "MySQL"],
+  },
+  {
+    id: "water-refilling-pos",
+    title: "Water-refilling POS",
+    summary:
+      "Custom point of sale for sales tracking, inventory, and customer management.",
+    roles: [{ title: "Freelance Software Developer", dates: "2022" }],
+    bullets: [
+      "Point-of-sale system in Java with MongoDB.",
+      "Sales, inventory, and customer management.",
+    ],
+    tech: ["Java", "MongoDB"],
+  },
 ];
 
 export type ExperienceItem = {
@@ -178,7 +179,7 @@ export type ExperienceItem = {
 export const experience: ExperienceItem[] = [
   {
     dates: "Aug 2024 - present",
-    title: "Master's Thesis Researcher",
+    title: "Master of Science Thesis Researcher",
     org: "University of San Carlos",
     detail:
       "Firmware, ADC acquisition, and a browser-based oscilloscope for Lab in a Box / LABSoft.",

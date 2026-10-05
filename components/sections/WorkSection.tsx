@@ -10,21 +10,25 @@ export function WorkSection() {
         id="work"
         index="02"
         title="Work"
-        description="Selected projects and roles. Open Details on a project for the full write-up."
+        description="Selected projects and roles. Hover a card to read the write-up."
       />
 
-      <div className="mt-16 max-w-3xl">
-        <SubsectionHeading>Projects</SubsectionHeading>
-        <div className="mt-8 flex flex-col gap-5">
+      <div className="mt-16">
+        <div className="text-center">
+          <SubsectionHeading>Projects</SubsectionHeading>
+        </div>
+        <div className="mx-auto mt-8 flex max-w-3xl flex-col gap-5">
           {caseStudies.map((study) => (
             <CaseStudy key={study.id} study={study} />
           ))}
         </div>
       </div>
 
-      <div className="mt-20 max-w-3xl">
-        <SubsectionHeading>Work Experience</SubsectionHeading>
-        <div className="mt-8">
+      <div className="mt-20">
+        <div className="text-center">
+          <SubsectionHeading>Work Experience</SubsectionHeading>
+        </div>
+        <div className="mx-auto mt-8 max-w-3xl">
           <ExperienceList />
         </div>
       </div>

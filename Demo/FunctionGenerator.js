@@ -305,6 +305,23 @@
     return { unit: "us", scale: 1e-6 };
   }
 
+  function getPreviewUiScale() {
+    if (typeof window.LABSOFT_getUiScale === "function") {
+      return window.LABSOFT_getUiScale();
+    }
+    const raw = getComputedStyle(document.documentElement).getPropertyValue("--labsoft-ui-scale").trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) && n > 0 ? n : PREVIEW_UI_SCALE;
+  }
+
+  function getFgFontScale() {
+    const fg = document.querySelector(".fg_parent");
+    if (!fg) return 1;
+    const raw = getComputedStyle(fg).getPropertyValue("--fg-font-scale").trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  }
+
   function updateChannelUi(key) {
     const channel = state[key];
     const panel = document.querySelector('.fg_ch_panel[data-channel="' + key + '"]');
@@ -381,7 +398,7 @@
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, width, height);
 
-    const ui = PREVIEW_UI_SCALE;
+    const ui = getPreviewUiScale();
     const padLeft = 44 * ui;
     const padRight = 40 * ui;
     const padTop = 44 * ui;
@@ -427,7 +444,7 @@
     ctx.restore();
 
     ctx.fillStyle = labelColor;
-    ctx.font = (11 * ui) + "px monospace";
+    ctx.font = (11 * ui * getFgFontScale()) + "px monospace";
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
     for (let v = PREVIEW_Y_MIN; v <= PREVIEW_Y_MAX + 0.001; v += 1) {
@@ -518,6 +535,7 @@
     }
   });
   window.addEventListener("resize", drawPreviews);
+  window.addEventListener("labsoft-viewport-scale", drawPreviews);
 
   window.LABSOFT_fgOnThemeChange = drawPreviews;
   if (typeof window.LABSOFT_onDemoFgState === "function") {

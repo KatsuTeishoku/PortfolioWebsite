@@ -5,16 +5,18 @@ export function SectionHeader({
   index,
   title,
   description,
+  className = "",
 }: {
   id?: string;
   index: string;
   title: string;
   description?: ReactNode;
+  className?: string;
 }) {
   return (
     <header
       id={id}
-      className="max-w-3xl scroll-mt-14 lg:scroll-mt-2"
+      className={`mx-auto max-w-3xl scroll-mt-14 text-center lg:scroll-mt-2 ${className}`.trim()}
     >
       <p className="font-display text-sm tracking-[0.22em] text-muted uppercase">
         {index}
@@ -23,7 +25,7 @@ export function SectionHeader({
         {title}
       </h2>
       {description ? (
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted">
           {description}
         </p>
       ) : null}
@@ -31,9 +33,20 @@ export function SectionHeader({
   );
 }
 
-export function SubsectionHeading({ children }: { children: ReactNode }) {
+export function SubsectionHeading({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <h3 className="font-display text-sm tracking-[0.2em] text-accent uppercase">
+    <h3
+      className={
+        className ??
+        "font-display text-[1.65rem] leading-tight font-semibold tracking-tight text-accent sm:text-[1.85rem]"
+      }
+    >
       {children}
     </h3>
   );

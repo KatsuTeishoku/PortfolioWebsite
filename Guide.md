@@ -22,7 +22,7 @@ Keep this file in sync when source code, content, assets, scripts, or deploy set
 
 **Node.js:** Next.js 16 needs **Node 20.9+**. Check with `node -v`.
 
-There is **no database, no API routes, no auth, and no environment variables**. The site is static content rendered by Next.js.
+There is **no database and no auth**. Copy lives in `content/site.ts`. Chat send posts from the browser to **Web3Forms** (`NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` in `.env.local` / Vercel). Web3Forms free keys only accept client-side submits.
 
 ---
 
@@ -52,6 +52,7 @@ flowchart TD
   F --> G[Sidebar desktop]
   F --> H[MobileNav phone/tablet]
   F --> I[ThemeToggle desktop]
+  F --> Chat[ContactChat bottom-right]
   F --> J[main#content]
   J --> K[app/page.tsx]
   K --> L[HomeSection #home]
@@ -72,6 +73,8 @@ flowchart TB
   Chrome --> Sidebar
   Chrome --> MobileNav
   Chrome --> ThemeToggle
+  Chrome --> ContactChat
+  ContactChat --> Web3Forms
   Chrome --> Page
   Sidebar --> Photo1[ProfilePhoto rail]
   Sidebar --> Wordmark
@@ -176,20 +179,22 @@ flowchart LR
 | `app/globals.css` | Colors, fonts in Tailwind theme, skip-link, motion | Colors, accent, reduced-motion |
 | `components/VantaBackground.tsx` | [Vanta.js NET](https://www.vantajs.com/?effect=net) full-page WebGL background | Effect settings, theme colors |
 | `app/icon.svg` | Favicon (“JA”) | Branding |
-| `components/SiteChrome.tsx` | Shell: sidebar + mobile nav + main offset | Overall layout |
+| `components/SiteChrome.tsx` | Shell: sidebar + mobile nav + contact chat + main offset | Overall layout |
+| `components/ContactChat.tsx` | Bottom-right chat icon button + dialog; browser POST to Web3Forms | Contact UI |
+| `.env.example` | Template for `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` | Copy to `.env.local` |
 | `components/Sidebar.tsx` | Desktop left rail (photo, nav, email, last updated) | Desktop chrome |
 | `components/MobileNav.tsx` | Top bar + overlay menu | Mobile chrome |
 | `components/NavLinks.tsx` | Wordmark + section links; desktop rail links are left-aligned with equal horizontal padding | Nav look/behavior |
 | `components/ThemeToggle.tsx` | Sun/moon button | Theme UI |
 | `components/ProfilePhoto.tsx` | Next.js `<Image>` sizes/crop | Portrait crop (`object-[center_18%]`) |
-| `components/sections/SectionHeader.tsx` | Shared section title; `id` is the scroll target (`work`, `about`) | Section headings |
+| `components/sections/SectionHeader.tsx` | Shared section title (`mx-auto text-center`); `id` is the scroll target (`work`, `about`) | Section headings |
 | `components/sections/NumberedLines.tsx` | Shared 01/02/03-style numbered line layout | Hero + positioning lines |
 | `components/sections/HomeSection.tsx` | Hero (vertically centered); lines 01–03 + 04–06 | Hero layout |
-| `components/sections/WorkSection.tsx` | Work section: Projects, then Work Experience | Work layout |
+| `components/sections/WorkSection.tsx` | Work section: centered header, Projects, then Work Experience | Work layout |
 | `components/sections/AboutSection.tsx` | Photo, name, title, bio, education, scholarships, skills, contact | About layout |
-| `components/work/CaseStudy.tsx` | One project card + Details disclosure | Project card UI |
-| `components/work/DetailsDisclosure.tsx` | Animated Details +/− panel | Open/close transition |
-| `components/work/ExperienceList.tsx` | Timeline list | Experience UI |
+| `components/work/CaseStudy.tsx` | Project card; mouse hover expands Details | Project card UI |
+| `components/work/DetailsDisclosure.tsx` | Animated Details +/− panel (hover + click/tap) | Open/close transition |
+| `components/work/ExperienceList.tsx` | Timeline list; dates/org/detail `text-lg`, titles `text-xl` / `sm:text-2xl` | Experience UI |
 | `lib/theme.ts` | Theme helpers + `localStorage` key | Theme logic |
 | `lib/scrollToSection.ts` | Scrolls the target heading to the top of the main page (clears the 56px mobile header) | Scroll behavior |
 | `lib/cssColorToInt.ts` | Converts CSS `--background` / `--foreground` to Vanta hex ints | Theme-aware Vanta colors |
@@ -198,6 +203,7 @@ flowchart LR
 | `public/jhaycee-acain.png` | 4K graduation portrait (URL `/jhaycee-acain.png`) | Replace photo; keep the same filename **or** update `site.portrait.src` |
 | `public/demo/` | Live LABSoft demo pages (copy from `Demo/` after edits) | Served at `/demo/...` |
 | `public/demo/ui-theme.css` / `ui-theme.js` | Shared light/dark tokens + sun/moon toggle | Demo theme look and sync |
+| `public/demo/labsoft-viewport-scale.js` | Sets `--labsoft-ui-scale` from viewport (1920×1080 ref @ 1.1) | Demo responsive layout |
 | `public/demo/labsoft-demo-bus.js` | Shared FG state (`LABSOFT_DEMO_FG_STATE` + BroadcastChannel) | FG ↔ scope linking |
 | `public/demo/labsoft-demo-preview.js` | Emits ADCS packets into Oscilloscope.js at the capture period (`N / Fs`); stopped FG channels output 0 V | Scope traces in the demo |
 | `public/demo/Oscilloscope.html` (+ `.css` / `.js`) | Oscilloscope frontend demo | Scope UI |
@@ -281,11 +287,11 @@ Single source of truth:
 - `site` — name, title, email, lastUpdated, location, portrait path.
 - `home`, `caseStudies`, `experience`, `about`.
 
-`CaseStudy` type: `id`, `title`, `summary`, `roles` (`title` + `dates` per line), optional `demos` (`label` + `href`), `bullets`, `tech`, optional `recognition`. Lab in a Box uses two role lines (thesis and advising) and links to `/demo/Oscilloscope.html` and `/demo/Function Generator.html`.
+`CaseStudy` type: `id`, `title`, `summary`, `roles` (`title` + `dates` per line), optional `demos` (`label` + `href`), `bullets`, `tech`, optional `recognition`. `caseStudies` is newest-first (same as Work Experience): Lab in a Box (Aug 2024–present), Machine-status Perceptron (Oct 2024–May 2025), Invoice and sales automation (Jan–May 2024), Automated laundry (2022), Water-refilling POS (2022). Lab in a Box uses two role lines (thesis and advising) and links to `/demo/Oscilloscope.html` and `/demo/Function Generator.html`.
 
 ### Client chrome (`SiteChrome` and children)
 
-`SiteChrome` calls `useActiveSection()` once and passes `activeId` plus `navigateTo` to sidebar and mobile nav. Main content has `lg:ml-[260px]` so it clears the 260px rail on large screens. The desktop sidebar footer shows the email and `Last updated: {site.lastUpdated}`. That line is desktop-only. Store the date in `content/site.ts` as Month Day, Year (for example `September 3, 2026`).
+`SiteChrome` calls `useActiveSection()` once and passes `activeId` plus `navigateTo` to sidebar and mobile nav. Main content has `lg:ml-[260px]` so it clears the 260px rail on large screens. The desktop sidebar footer shows the email and `Last updated: {site.lastUpdated}`. That line is desktop-only. Store the date in `content/site.ts` as Month Day, Year (for example `October 5, 2026`). Bump `lastUpdated` whenever a user-visible change ships.
 
 `MobileNav` locks body scroll when open, focuses Close, and closes on Escape or overlay click.
 
@@ -295,9 +301,9 @@ Three variants: `rail` (112px circle, priority), `header` (36px circle, priority
 
 ### Work UI
 
-Work and About share `SectionHeader` (index, title, short intro) and `SubsectionHeading`. The `work` and `about` ids live on those headers so nav clicks pin **Work** / **About Me** to the top of the main column. Work lists **Projects** then a timeline of **Work Experience**. About leads with photo + bio, then education, a two-column scholarships/skills block, and a contact strip. `CaseStudy` shows summary, then role and dates on one row (stacked on small screens). Optional `demos` render as accent outline buttons (Lab in a Box: Oscilloscope Demo, Function Generator Demo) that open `/demo/` HTML pages in a new tab. Extra bullets live in `DetailsDisclosure` (300ms height-and-fade). `ExperienceList` is a left-rail timeline with accent dots.
+Work and About share `SectionHeader` (index, title, short intro; `mx-auto text-center`) and `SubsectionHeading`. The `work` and `about` ids live on those headers so nav clicks pin **Work** / **About Me** to the top of the main column. Work lists **Projects** then **Work Experience** (same `SubsectionHeading` — accent, `text-[1.65rem]` / `sm:text-[1.85rem]` like case-study titles; both subsection titles are centered; project cards and timeline columns are `mx-auto max-w-3xl`; dates/org/detail are `text-lg`, titles `text-xl` / `sm:text-2xl`). **About Me** uses the same centered `SectionHeader`; photo + bio, education, and scholarships/skills stay `mx-auto max-w-3xl`. Education / Scholarships / Skills / **Contact** use that larger subsection size. Contact is a centered closing band: full-bleed gradient hairline (`from-transparent via-hairline to-transparent`, `-mx-8` / `lg:-mx-16`), location, email (opens chat), and a **Send a message** accent outline button (same chat dialog). About body text is larger (`text-base`–`text-xl`) than Home. Clicking the email (sidebar, mobile menu, or About contact) or the floating chat icon button opens a bottom-right dialog. The visitor enters their email and a message; the browser posts to **Web3Forms** with `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` (inbox is the address used when creating the key: `site.email`). Success copy in the dialog is **Email sent successfully.** Failed sends show **Email sent failed.** `CaseStudy` shows summary, then role and dates on one row (stacked on small screens). Optional `demos` render as accent outline buttons (Lab in a Box: Oscilloscope Demo, Function Generator Demo) that open `/demo/` HTML pages in a new tab. Extra bullets live in `DetailsDisclosure` (300ms height-and-fade; mouse hover on the card expands Details, click/tap still toggles). `ExperienceList` is a left-rail timeline with accent dots.
 
-LABSoft demos are static files in `public/demo/` (keep in sync with the repo-root `Demo/` folder). Next.js serves them at `/demo/Oscilloscope.html` and `/demo/Function Generator.html`. Each demo top bar starts with a **Home** button (`href="/"`) back to the portfolio. Shared `ui-theme.js` / `ui-theme.css` sync light/dark mode and the sun/moon icon across both pages (`localStorage` key `LABSOFT_UI_THEME`, plus `BroadcastChannel`). The Function Generator keeps the three-column layout: stacked Channel 1 / Channel 2 previews on the left, then Channel 1 controls, then Channel 2 controls. Both demo pages fill the browser viewport (`height: 100vh`): the Function Generator uses `--fg-scale: 1.1`, and the Oscilloscope keeps its original control layout while the plot grows to fill leftover height. `labsoft-demo-bus.js` links Function Generator Channel 1 → Oscilloscope Channel 1 and Channel 2 → Channel 2. Each FG channel has Frequency, Period, and Amplitude (peak volts, default 1 V, 0 V to 5 V in 100 mV steps, 0 V offset). The Oscilloscope demo feeds those waves through the same `ingestWebSocketFrame` path as LABSoft. `labsoft-demo-preview.js` emits ADCS packets on a capture-period timer (`N / Fs`, at most 20 Hz), not on every display frame. Stopped Function Generator channels output 0 V; press Run to drive live waveforms. Trigger Mode defaults to Auto. Dragging Trigger Level re-locks the last capture immediately. Vertical Offset redraws the traces as you step or commit the field. The scope redraws WebGL when a new packet, a resize, a zoom animation, or a live trigger-level or offset change happens. Open both pages (same browser, same origin) and press Run on a Function Generator channel to drive waveforms onto the scope. There is no hardware WebSocket or WASM in this preview.
+LABSoft demos are static files in `public/demo/` (keep in sync with the repo-root `Demo/` folder). Next.js serves them at `/demo/Oscilloscope.html` and `/demo/Function Generator.html`. Each demo top bar starts with a **Home** button (`href="/"`) back to the portfolio. Shared `ui-theme.js` / `ui-theme.css` sync light/dark mode and the sun/moon icon across both pages (`localStorage` key `LABSOFT_UI_THEME`, plus `BroadcastChannel`). The Function Generator keeps the three-column layout (70% / 15% / 15% via `14fr 3fr 3fr` on `.fg_main`): stacked Channel 1 / Channel 2 previews on the left, then Channel 1 controls, then Channel 2 controls. Both demo pages fill the browser viewport (`height: 100vh`) and scale with monitor resolution via `labsoft-viewport-scale.js` (`--labsoft-ui-scale`, reference 1920×1080 @ 1.1, clamped 0.72–1.35). The Function Generator applies that scale through `--fg-scale`, with extra multipliers `--fg-font-scale` (text) and `--fg-wave-scale` (waveform SVG icons) on `.fg_parent`; the Oscilloscope scales control chrome and axis labels with `--scope-scale` while the plot grows to fill leftover height. `labsoft-demo-bus.js` links Function Generator Channel 1 → Oscilloscope Channel 1 and Channel 2 → Channel 2. Each FG channel has Frequency, Period, and Amplitude (peak volts, default 1 V, 0 V to 5 V in 100 mV steps, 0 V offset). The Oscilloscope demo feeds those waves through the same `ingestWebSocketFrame` path as LABSoft. `labsoft-demo-preview.js` emits ADCS packets on a capture-period timer (`N / Fs`, at most 20 Hz), not on every display frame. Stopped Function Generator channels output 0 V; press Run to drive live waveforms. Trigger Mode defaults to Auto. Dragging Trigger Level re-locks the last capture immediately. Vertical Offset redraws the traces as you step or commit the field. The scope redraws WebGL when a new packet, a resize, a zoom animation, or a live trigger-level or offset change happens. Open both pages (same browser, same origin) and press Run on a Function Generator channel to drive waveforms onto the scope. There is no hardware WebSocket or WASM in this preview.
 
 ```mermaid
 flowchart LR
@@ -341,6 +347,8 @@ npm run dev
 ```
 
 Then open **http://localhost:3000**.
+
+Chat send needs **Web3Forms**. Copy `.env.example` to `.env.local`, paste the access key from [https://web3forms.com](https://web3forms.com) (create it with `jhayceeworkfiles@gmail.com`) as `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`, then **stop and restart** `npm run dev`.
 
 - Hot reload: save a file and the browser updates.
 - Default port **3000**. If it is taken, Next prints another port (e.g. 3001).
@@ -448,7 +456,7 @@ Check remotes: `git remote -v`.
 
 ## Deploy to Vercel (recommended: Git)
 
-This app has **no env vars**, so import + deploy is enough once the repo is on GitHub/GitLab/Bitbucket.
+This app needs **`NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`** for the contact chat. Add it in Vercel → Project → **Settings → Environment Variables** (Production and Preview), then redeploy. Do not commit `.env.local`.
 
 ### A. Put the project on GitHub
 
@@ -467,7 +475,7 @@ git branch -M main
 git push -u origin main
 ```
 
-Do **not** commit secrets. This project currently has none.
+Do **not** commit secrets. Keep `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` in `.env.local` and Vercel env only. Web3Forms documents this key as usable in the browser.
 
 Include `public/jhaycee-acain.png` in the commit or the live site will have a broken portrait.
 
@@ -487,7 +495,7 @@ Include `public/jhaycee-acain.png` in the commit or the live site will have a br
    | Output | leave default (Vercel handles `.next`) |
    | Node.js | 20.x or 22.x |
 
-5. Environment variables: **none required**.
+5. Environment variables: **`NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`** (from [web3forms.com](https://web3forms.com), inbox `jhayceeworkfiles@gmail.com`).
 6. Click **Deploy**.
 7. Open the `*.vercel.app` URL. Check Home / Work / About, theme toggle, mobile menu, and the portrait.
 
@@ -533,7 +541,6 @@ Follow the prompts. Git-connected deploys are easier for ongoing updates.
 ### Product gaps (optional, not bugs)
 
 - Single page only — no `/blog`, no per-project routes.
-- Email is `mailto:` only — no contact form.
 - No tests.
 - `next.config.ts` is empty — fine until you need image domains, redirects, or `output: "export"`.
 - Accessibility is started (skip link, `aria-*`, focus rings, reduced motion) but the mobile menu is not a full focus trap.
@@ -556,14 +563,22 @@ Follow the prompts. Git-connected deploys are easier for ongoing updates.
 
 | Goal | Where |
 | --- | --- |
-| Change name, email, tagline, last-updated date | `content/site.ts` → `site` |
+| Change name, email, location, tagline, last-updated date | `content/site.ts` → `site` (bump `lastUpdated` on user-visible edits) |
+| Work Experience heading | `components/sections/SectionHeader.tsx` `SubsectionHeading` (accent, case-study title size); Projects and Work Experience centered; columns `mx-auto max-w-3xl` |
+| Work Experience column text | `components/work/ExperienceList.tsx` dates/org/detail `text-lg`; titles `text-xl` / `sm:text-2xl`; date column `15rem` |
+| Work / About Me section headers | `components/sections/SectionHeader.tsx` (`mx-auto text-center`) |
+| About Contact block | `components/sections/AboutSection.tsx` centered band; gradient hairline; `ContactMessageButton` in `ContactChat.tsx` |
+| Contact chat / email dialog | `components/ContactChat.tsx` → Web3Forms (browser). Key: `.env.local` / Vercel `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` (see `.env.example`) |
 | Change hero sentences | `content/site.ts` → `home.numbered` |
 | Change hero positioning paragraph | `content/site.ts` → `home.positioning` |
-| Add a project | `content/site.ts` → `caseStudies` |
+| Add a project | `content/site.ts` → `caseStudies` (newest-first by role dates) |
 | Change Lab in a Box demo links | `content/site.ts` → `caseStudies[0].demos`; HTML/CSS/JS in `public/demo/` |
 | Edit Oscilloscope / Function Generator demos | Edit `Demo/`, then copy into `public/demo/` |
-| Function Generator 1920×1080 scale | `public/demo/Function Generator.css` → `--fg-scale` |
-| Oscilloscope viewport fill | `public/demo/Oscilloscope.css` → `.parent` `100vh` grid; plot is flex `1fr` |
+| Demo viewport scale (both pages) | `public/demo/labsoft-viewport-scale.js`; `--labsoft-ui-scale` in `ui-theme.css` |
+| Function Generator layout scale | `public/demo/Function Generator.css` → `--fg-scale: var(--labsoft-ui-scale)` |
+| Function Generator column widths | `public/demo/Function Generator.css` → `.fg_main` `grid-template-columns: minmax(0, 14fr) minmax(0, 3fr) minmax(0, 3fr)` (preview / Ch1 / Ch2) |
+| Function Generator text / wave icons | `public/demo/Function Generator.css` → `.fg_parent` `--fg-font-scale`, `--fg-wave-scale`; wave SVGs use Ch1 gold / Ch2 teal (matches preview traces) |
+| Oscilloscope viewport fill + scale | `public/demo/Oscilloscope.css` → `.parent` `100vh` grid; `--scope-scale` on side-panel chrome only; plot y-labels **12px monospace**; CH1/CH2 header is **`--scope-y-label-size + 5pt`** (`--y-axis-width: 60px`) |
 | Function Generator amplitude | `Demo/Function Generator.html` Amplitude fields (0 V–5 V, 100 mV steps); `FunctionGenerator.js` |
 | Function Generator preview window | `Demo/FunctionGenerator.js` → `PREVIEW_WINDOW_MIN_SEC` (default 35 ms) |
 | Demo light/dark or sun/moon icon | `public/demo/ui-theme.css` and `ui-theme.js` |

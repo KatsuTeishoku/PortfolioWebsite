@@ -1,9 +1,16 @@
 "use client";
 
-import { useId, useState, type ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 
-export function DetailsDisclosure({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
+export function DetailsDisclosure({
+  children,
+  open,
+  onToggle,
+}: {
+  children: ReactNode;
+  open: boolean;
+  onToggle: () => void;
+}) {
   const panelId = useId();
 
   return (
@@ -12,7 +19,7 @@ export function DetailsDisclosure({ children }: { children: ReactNode }) {
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((current) => !current)}
+        onClick={onToggle}
         className="cursor-pointer font-display text-sm tracking-wide text-accent transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       >
         Details

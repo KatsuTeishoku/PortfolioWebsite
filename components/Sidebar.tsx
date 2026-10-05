@@ -1,5 +1,6 @@
 "use client";
 
+import { ContactEmailLink } from "@/components/ContactChat";
 import { NavLinks, Wordmark } from "@/components/NavLinks";
 import { ProfilePhoto } from "@/components/ProfilePhoto";
 import { site, type SectionId } from "@/content/site";
@@ -24,12 +25,7 @@ export function Sidebar({
           <NavLinks activeId={activeId} onSelect={onSelect} />
         </nav>
         <div className="flex flex-col items-center gap-3 text-center">
-          <a
-            href={`mailto:${site.email}`}
-            className="text-xs tracking-wide text-muted break-all transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-          >
-            {site.email}
-          </a>
+          <ContactEmailLink className="text-xs tracking-wide text-muted break-all transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent" />
           <p className="text-[0.7rem] tracking-wide text-muted">
             Last updated: {site.lastUpdated}
           </p>

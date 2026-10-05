@@ -2700,11 +2700,11 @@ function updateAxisLabels() {
   if (yLabelsHeader) {
     yLabelsHeader.innerHTML = "";
     const ch1 = document.createElement("span");
+    ch1.className = "y_labels_header_ch1" + (channelConfig.ch1.enabled ? "" : " is-disabled");
     ch1.textContent = "CH1";
-    ch1.style.color = channelConfig.ch1.enabled ? "#ffff00" : "#777";
     const ch2 = document.createElement("span");
+    ch2.className = "y_labels_header_ch2" + (channelConfig.ch2.enabled ? "" : " is-disabled");
     ch2.textContent = "CH2";
-    ch2.style.color = channelConfig.ch2.enabled ? "#00cec8" : "#777";
     yLabelsHeader.appendChild(ch1);
     yLabelsHeader.appendChild(ch2);
   }

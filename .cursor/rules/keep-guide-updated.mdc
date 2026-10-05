@@ -13,3 +13,4 @@ After any change to this portfolio (components, `content/site.ts`, `app/`, `lib/
 - If a feature, section, nav item, or content field is added, update the relevant “how it works” and “I want to change X” rows.
 - Do not document `.next/`, `node_modules/`, or other generated output as source.
 - Skip the Guide.md update only when the change is purely generated/cache output with no source or docs impact.
+- When the change is user-visible (copy, layout, demos, or site chrome), also set `site.lastUpdated` in `content/site.ts` to today's date as Month Day, Year (for example `October 5, 2026`).

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { ContactEmailLink } from "@/components/ContactChat";
 import { NavLinks, Wordmark } from "@/components/NavLinks";
 import { ProfilePhoto } from "@/components/ProfilePhoto";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { site, type SectionId } from "@/content/site";
+import { type SectionId } from "@/content/site";
 
 export function MobileNav({
   activeId,
@@ -100,12 +101,7 @@ export function MobileNav({
                 variant="overlay"
               />
             </nav>
-            <a
-              href={`mailto:${site.email}`}
-              className="mt-auto pb-8 text-sm text-muted transition-colors hover:text-accent"
-            >
-              {site.email}
-            </a>
+            <ContactEmailLink className="mt-auto pb-8 text-left text-sm text-muted transition-colors hover:text-accent" />
           </div>
           <button
             type="button"

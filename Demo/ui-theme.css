@@ -1,4 +1,6 @@
 :root {
+  /* Reference layout: 1920x1080 at 1.1; scales down/up with viewport (see labsoft-viewport-scale.js). */
+  --labsoft-ui-scale: 1.1;
   --ui-bg: #f4f4f6;
   --ui-bg-subtle: #ececef;
   --ui-bg-muted: #e2e2e6;

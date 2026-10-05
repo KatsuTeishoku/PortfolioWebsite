@@ -1,9 +1,20 @@
+"use client";
+
+import { useState } from "react";
 import { DetailsDisclosure } from "@/components/work/DetailsDisclosure";
 import type { CaseStudy as CaseStudyData } from "@/content/site";
 
 export function CaseStudy({ study }: { study: CaseStudyData }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
   return (
-    <article className="content-card border-l-2 border-accent py-7 pr-6 pl-6 transition-colors sm:pl-8">
+    <article
+      className="content-card border-l-2 border-accent py-7 pr-6 pl-6 transition-colors sm:pl-8"
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setDetailsOpen(true);
+      }}
+      onPointerLeave={() => setDetailsOpen(false)}
+    >
       <h3 className="font-display text-[1.65rem] leading-tight font-semibold tracking-tight text-foreground sm:text-[1.85rem]">
         {study.title}
       </h3>
@@ -48,7 +59,10 @@ export function CaseStudy({ study }: { study: CaseStudyData }) {
           </li>
         ))}
       </ul>
-      <DetailsDisclosure>
+      <DetailsDisclosure
+        open={detailsOpen}
+        onToggle={() => setDetailsOpen((current) => !current)}
+      >
         <ul className="mt-4 space-y-3 text-[0.95rem] leading-relaxed text-foreground/90">
           {study.bullets.map((bullet) => (
             <li key={bullet} className="pl-4 -indent-4">
