@@ -35,16 +35,25 @@ export function CaseStudy({ study }: { study: CaseStudyData }) {
         ))}
       </ul>
       {study.demos && study.demos.length > 0 ? (
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {study.demos.map((demo) => (
             <a
               key={demo.href}
               href={demo.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center border border-accent px-3 py-1.5 font-display text-sm tracking-wide text-accent transition-colors hover:bg-accent hover:text-background focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+              className="group flex min-w-0 flex-col items-center gap-3 text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
             >
-              {demo.label}
+              {demo.preview ? (
+                <img
+                  src={demo.preview}
+                  alt=""
+                  className="w-full border border-hairline"
+                />
+              ) : null}
+              <span className="inline-flex items-center border border-accent px-3 py-1.5 font-display text-sm tracking-wide text-accent transition-colors group-hover:bg-accent group-hover:text-background">
+                {demo.label}
+              </span>
             </a>
           ))}
         </div>

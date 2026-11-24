@@ -284,7 +284,7 @@ function ContactChatPanel() {
         onClick={open ? closeChat : openChat}
         aria-expanded={open}
         aria-label={open ? "Close chat" : "Open chat"}
-        className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-white bg-rail text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent in-[html.light]:border-zinc-900"
+        className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-accent bg-rail text-accent shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-white hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent in-[html.light]:hover:border-zinc-900 in-[html.light]:hover:text-zinc-900"
       >
         <ChatIcon />
       </button>

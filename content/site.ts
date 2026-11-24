@@ -12,7 +12,7 @@ export const site = {
   title:
     "Master of Science in Computer Engineering Candidate - Major in Digital Hardware Systems",
   email: "jhayceeworkfiles@gmail.com",
-  lastUpdated: "October 6, 2026",
+  lastUpdated: "November 25, 2026",
   location: "Cebu, Philippines",
   institution: "University of San Carlos",
   portrait: {
@@ -47,6 +47,7 @@ export type CaseStudyRole = {
 export type CaseStudyDemo = {
   label: string;
   href: string;
+  preview?: string;
 };
 
 export type CaseStudy = {
@@ -80,10 +81,12 @@ export const caseStudies: CaseStudy[] = [
       {
         label: "Oscilloscope Demo",
         href: "/demo/Oscilloscope.html",
+        preview: "/demo/Osciolloscope_Demo.gif",
       },
       {
         label: "Function Generator Demo",
         href: "/demo/Function%20Generator.html",
+        preview: "/demo/Function_Generator_Demo.gif",
       },
     ],
     bullets: [

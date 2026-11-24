@@ -180,7 +180,7 @@ flowchart LR
 | `components/VantaBackground.tsx` | [Vanta.js NET](https://www.vantajs.com/?effect=net) full-page WebGL background | Effect settings, theme colors |
 | `app/icon.svg` | Favicon (“JA”) | Branding |
 | `components/SiteChrome.tsx` | Shell: sidebar + mobile nav + contact chat + main offset | Overall layout |
-| `components/ContactChat.tsx` | Bottom-right chat icon button + dialog; browser POST to Web3Forms | Contact UI |
+| `components/ContactChat.tsx` | Bottom-right chat icon (accent outline by default, white on hover in dark mode) + dialog; browser POST to Web3Forms | Contact UI |
 | `.env.example` | Template for `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` | Copy to `.env.local` |
 | `components/Sidebar.tsx` | Desktop left rail (photo, nav, email, last updated) | Desktop chrome |
 | `components/MobileNav.tsx` | Top bar + overlay menu | Mobile chrome |
@@ -287,7 +287,7 @@ Single source of truth:
 - `site` — name, title, email, lastUpdated, location, portrait path.
 - `home`, `caseStudies`, `experience`, `about`.
 
-`CaseStudy` type: `id`, `title`, `summary`, `roles` (`title` + `dates` per line), optional `demos` (`label` + `href`), `bullets`, `tech`, optional `recognition`. `caseStudies` is newest-first (same as Work Experience): Lab in a Box (Aug 2024–present), Machine-status Perceptron (Oct 2024–May 2025), Invoice and sales automation (Jan–May 2024), Automated laundry (2022), Water-refilling POS (2022). Lab in a Box uses two role lines (thesis and advising) and links to `/demo/Oscilloscope.html` and `/demo/Function Generator.html`.
+`CaseStudy` type: `id`, `title`, `summary`, `roles` (`title` + `dates` per line), optional `demos` (`label` + `href`, optional `preview` GIF with the button centered under it), `bullets`, `tech`, optional `recognition`. `caseStudies` is newest-first (same as Work Experience): Lab in a Box (Aug 2024–present), Machine-status Perceptron (Oct 2024–May 2025), Invoice and sales automation (Jan–May 2024), Automated laundry (2022), Water-refilling POS (2022). Lab in a Box uses two role lines (thesis and advising) and links to `/demo/Oscilloscope.html` and `/demo/Function Generator.html`.
 
 ### Client chrome (`SiteChrome` and children)
 
@@ -572,7 +572,7 @@ Follow the prompts. Git-connected deploys are easier for ongoing updates.
 | Change hero sentences | `content/site.ts` → `home.numbered` |
 | Change hero positioning paragraph | `content/site.ts` → `home.positioning` |
 | Add a project | `content/site.ts` → `caseStudies` (newest-first by role dates) |
-| Change Lab in a Box demo links | `content/site.ts` → `caseStudies[0].demos`; HTML/CSS/JS in `public/demo/` |
+| Change Lab in a Box demo links | `content/site.ts` → `caseStudies[0].demos` (`preview` GIF above each button); HTML/CSS/JS/GIFs in `public/demo/` (source copies in `Demo/`: `Osciolloscope_Demo.gif`, `Function_Generator_Demo.gif`) |
 | Edit Oscilloscope / Function Generator demos | Edit `Demo/`, then copy into `public/demo/` |
 | Demo viewport scale (both pages) | `public/demo/labsoft-viewport-scale.js`; `--labsoft-ui-scale` in `ui-theme.css` |
 | Function Generator layout scale | `public/demo/Function Generator.css` → `--fg-scale: var(--labsoft-ui-scale)` |
